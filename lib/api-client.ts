@@ -36,8 +36,34 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+const transformIds = (obj: any): any => {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(transformIds);
+  }
+
+  const transformed: any = {};
+  for (const key of Object.keys(obj)) {
+    transformed[key] = transformIds(obj[key]);
+  }
+
+  if (obj._id && !obj.id) {
+    transformed.id = obj._id;
+  }
+
+  return transformed;
+};
+
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.data) {
+      response.data = transformIds(response.data);
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
