@@ -11,6 +11,7 @@ import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, FolderOpen, Loader2 } from 'lucide-react';
 import { Category } from '@/types';
@@ -30,6 +31,7 @@ export default function CategoriesManager() {
 
   const [isOpen, setIsOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
 
   // Fetch Categories
   const { data: res, isLoading, error } = useQuery({
@@ -113,9 +115,7 @@ export default function CategoriesManager() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this category?')) {
-      deleteMutation.mutate(id);
-    }
+    setCategoryToDelete(id);
   };
 
   return (
@@ -244,6 +244,19 @@ export default function CategoriesManager() {
           </div>
         </form>
       </Dialog>
+
+      <ConfirmDialog
+        isOpen={!!categoryToDelete}
+        onClose={() => setCategoryToDelete(null)}
+        onConfirm={() => {
+          if (categoryToDelete) {
+            deleteMutation.mutate(categoryToDelete);
+          }
+        }}
+        title="Delete Category"
+        description="Are you sure you want to delete this category? This action cannot be undone."
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }

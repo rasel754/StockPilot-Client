@@ -32,9 +32,11 @@ export default function MainLayout({ children }: { children: ReactNode }) {
     
     if (isDark) {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
       setDarkMode(true);
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       setDarkMode(false);
     }
   }, []);
@@ -42,10 +44,12 @@ export default function MainLayout({ children }: { children: ReactNode }) {
   const toggleDarkMode = () => {
     if (darkMode) {
       document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
       localStorage.setItem('theme', 'light');
       setDarkMode(false);
     } else {
       document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
       localStorage.setItem('theme', 'dark');
       setDarkMode(true);
     }

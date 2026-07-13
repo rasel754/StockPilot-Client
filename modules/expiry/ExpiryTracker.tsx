@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Clock, AlertTriangle, AlertCircle, Trash2, Loader2, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 
 export default function ExpiryTracker() {
   const queryClient = useQueryClient();
@@ -19,6 +20,7 @@ export default function ExpiryTracker() {
 
   // Customizable days filter for soon-to-expire
   const [daysFilter, setDaysFilter] = useState(30);
+  const [showPurgeConfirm, setShowPurgeConfirm] = useState(false);
 
   // Queries
   const { data: expiredRes, isLoading: isExpiredLoading } = useQuery({
@@ -53,9 +55,7 @@ export default function ExpiryTracker() {
   });
 
   const handlePurge = () => {
-    if (window.confirm('Purge ALL expired batches from database? This cannot be undone.')) {
-      purgeMutation.mutate();
-    }
+    setShowPurgeConfirm(true);
   };
 
   const getDaysRemainingText = (expiryDateStr: string) => {
@@ -231,6 +231,17 @@ export default function ExpiryTracker() {
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        isOpen={showPurgeConfirm}
+        onClose={() => setShowPurgeConfirm(false)}
+        onConfirm={() => {
+          purgeMutation.mutate();
+        }}
+        title="Purge Expired Batches"
+        description="Purge ALL expired batches from database? This cannot be undone."
+        isLoading={purgeMutation.isPending}
+      />
     </div>
   );
 }

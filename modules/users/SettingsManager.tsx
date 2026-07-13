@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Settings, Users, Building, ShieldAlert, Loader2, Save } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -20,6 +21,7 @@ export default function SettingsManager() {
 
   const [editUserName, setEditUserName] = useState('');
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{ id: string; newRole: string } | null>(null);
 
   // 1. Fetch Business Details
   const { data: busRes, isLoading: isBusLoading } = useQuery({
@@ -56,12 +58,11 @@ export default function SettingsManager() {
   });
 
   const handleRoleChange = (id: string, newRole: string) => {
-    if (id === currentUser?.id) {
-      if (!window.confirm('Warning: Demoting yourself from ADMIN will lock you out of admin actions. Continue?')) {
-        return;
-      }
+    if (id === currentUser?.id && newRole !== 'ADMIN') {
+      setPendingRoleChange({ id, newRole });
+    } else {
+      updateUserMutation.mutate({ id, payload: { role: newRole } });
     }
-    updateUserMutation.mutate({ id, payload: { role: newRole } });
   };
 
   const handleStartEditName = (id: string, currentName: string) => {
@@ -224,6 +225,22 @@ export default function SettingsManager() {
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        isOpen={!!pendingRoleChange}
+        onClose={() => setPendingRoleChange(null)}
+        onConfirm={() => {
+          if (pendingRoleChange) {
+            updateUserMutation.mutate({
+              id: pendingRoleChange.id,
+              payload: { role: pendingRoleChange.newRole },
+            });
+          }
+        }}
+        title="Confirm Role Change"
+        description="Warning: Demoting yourself from ADMIN will lock you out of admin actions. Continue?"
+        isLoading={updateUserMutation.isPending}
+      />
     </div>
   );
 }

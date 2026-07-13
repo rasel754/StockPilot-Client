@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Plus, Trash2, ArrowUpDown, Loader2, Upload, FileText, Calendar } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
@@ -39,6 +40,7 @@ export default function StockEntriesManager() {
   const [isBulkOpen, setIsBulkOpen] = useState(false);
   const [csvContent, setCsvContent] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [showPurgeConfirm, setShowPurgeConfirm] = useState(false);
 
   // Fetch products for picker
   const { data: prodRes } = useQuery({
@@ -158,9 +160,7 @@ export default function StockEntriesManager() {
   };
 
   const handleDeleteExpired = () => {
-    if (window.confirm('This will purge all expired stock entries from the database. Are you sure?')) {
-      deleteExpiredMutation.mutate();
-    }
+    setShowPurgeConfirm(true);
   };
 
   // Sample CSV format helper
@@ -419,6 +419,17 @@ export default function StockEntriesManager() {
           </div>
         </form>
       </Dialog>
+
+      <ConfirmDialog
+        isOpen={showPurgeConfirm}
+        onClose={() => setShowPurgeConfirm(false)}
+        onConfirm={() => {
+          deleteExpiredMutation.mutate();
+        }}
+        title="Purge Expired Stock"
+        description="This will purge all expired stock entries from the database. Are you sure?"
+        isLoading={deleteExpiredMutation.isPending}
+      />
     </div>
   );
 }

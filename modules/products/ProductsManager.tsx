@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { Dialog } from '@/components/ui/dialog';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, Search, Filter, Loader2, PackageOpen } from 'lucide-react';
@@ -38,6 +39,7 @@ export default function ProductsManager() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const limit = 10;
 
   // Dialog State
@@ -165,9 +167,7 @@ export default function ProductsManager() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      deleteMutation.mutate(id);
-    }
+    setProductToDelete(id);
   };
 
   return (
@@ -415,6 +415,19 @@ export default function ProductsManager() {
           </div>
         </form>
       </Dialog>
+
+      <ConfirmDialog
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={() => {
+          if (productToDelete) {
+            deleteMutation.mutate(productToDelete);
+          }
+        }}
+        title="Delete Product"
+        description="Are you sure you want to delete this product? This action cannot be undone."
+        isLoading={deleteMutation.isPending}
+      />
     </div>
   );
 }
