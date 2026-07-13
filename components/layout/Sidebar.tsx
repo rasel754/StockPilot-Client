@@ -31,9 +31,16 @@ export default function Sidebar({ isOpen }: SidebarProps) {
       )}
     >
       <div className="p-6 border-b border-border flex items-center gap-2">
-        <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-black text-lg">
-          S
-        </div>
+        <svg className="h-8 w-8 text-primary shrink-0" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="180" height="180" rx="40" fill="currentColor" />
+          <rect x="45" y="105" width="14" height="35" rx="4" fill="#FFFFFF" opacity="0.6" />
+          <rect x="68" y="85" width="14" height="55" rx="4" fill="#FFFFFF" opacity="0.8" />
+          <rect x="91" y="60" width="14" height="80" rx="4" fill="#FFFFFF" />
+          <path d="M145 35 L85 75 L112 87 Z" fill="#E0E7FF" opacity="0.7" />
+          <path d="M145 35 L112 87 L125 110 Z" fill="#FFFFFF" />
+          <path d="M145 35 L112 87" stroke="currentColor" strokeWidth="1" opacity="0.3" strokeLinecap="round" />
+          <circle cx="145" cy="35" r="6" fill="#0EA5E9" />
+        </svg>
         <span className="text-xl font-bold tracking-tight text-primary">StockPilot</span>
       </div>
 

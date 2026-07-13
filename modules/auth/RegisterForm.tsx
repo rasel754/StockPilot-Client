@@ -10,6 +10,9 @@ import { showToast } from '@/components/ui/toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Eye, EyeOff } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
 
 const registerSchema = z.object({
   businessName: z.string().min(2, 'Business name must be at least 2 characters long'),
@@ -26,6 +29,7 @@ export default function RegisterForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -78,7 +82,17 @@ export default function RegisterForm() {
 
   return (
     <div className="w-full max-w-md bg-card rounded-2xl shadow-xl p-8 border border-border">
-      <div className="text-center mb-8">
+      <div className="text-center mb-8 flex flex-col items-center">
+        <svg className="h-12 w-12 text-primary mb-3" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="180" height="180" rx="40" fill="currentColor" />
+          <rect x="45" y="105" width="14" height="35" rx="4" fill="#FFFFFF" opacity="0.6" />
+          <rect x="68" y="85" width="14" height="55" rx="4" fill="#FFFFFF" opacity="0.8" />
+          <rect x="91" y="60" width="14" height="80" rx="4" fill="#FFFFFF" />
+          <path d="M145 35 L85 75 L112 87 Z" fill="#E0E7FF" opacity="0.7" />
+          <path d="M145 35 L112 87 L125 110 Z" fill="#FFFFFF" />
+          <path d="M145 35 L112 87" stroke="currentColor" strokeWidth="1" opacity="0.3" strokeLinecap="round" />
+          <circle cx="145" cy="35" r="6" fill="#0EA5E9" />
+        </svg>
         <h1 className="text-3xl font-extrabold tracking-tight text-primary mb-2">Register</h1>
         <p className="text-sm text-muted-foreground">Set up your business and admin user</p>
       </div>
@@ -133,12 +147,28 @@ export default function RegisterForm() {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider mb-2 text-muted-foreground">Password</label>
-          <Input
-            type="password"
-            placeholder="••••••••"
-            className={errors.password ? 'border-destructive focus:ring-destructive/20' : ''}
-            {...register('password')}
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••"
+              className={cn(
+                'pr-10',
+                errors.password ? 'border-destructive focus:ring-destructive/20' : ''
+              )}
+              {...register('password')}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground focus:outline-none cursor-pointer flex items-center justify-center"
+            >
+              {showPassword ? (
+                <EyeOff className="h-4 w-4" />
+              ) : (
+                <Eye className="h-4 w-4" />
+              )}
+            </button>
+          </div>
           {errors.password && <p className="text-xs text-destructive mt-1.5">{errors.password.message}</p>}
         </div>
 

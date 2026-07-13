@@ -1,26 +1,67 @@
 <svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @media (prefers-color-scheme: light) {
-      .background { fill: black; }
-      .foreground { fill: white; }
-    }
-    @media (prefers-color-scheme: dark) {
-      .background { fill: white; }
-      .foreground { fill: black; }
-    }
-  </style>
-  <g clip-path="url(#clip0_7960_43945)">
-    <rect class="background" width="180" height="180" rx="37" />
-    <g style="transform: scale(95%); transform-origin: center">
-      <path class="foreground"
-        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
-      <path class="foreground"
-        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
-    </g>
-  </g>
   <defs>
-    <clipPath id="clip0_7960_43945">
-      <rect width="180" height="180" fill="white" />
-    </clipPath>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="180" y2="180" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#1E293B" />
+    </linearGradient>
+
+    <!-- Accent Gradient for Paper Airplane / Pilot Wing -->
+    <linearGradient id="wingGrad" x1="80" y1="40" x2="140" y2="100" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" /> <!-- sky-400 -->
+      <stop offset="100%" stop-color="#6366F1" /> <!-- indigo-500 -->
+    </linearGradient>
+
+    <!-- Accent Gradient for Bar Chart Trails -->
+    <linearGradient id="barGrad" x1="40" y1="70" x2="110" y2="140" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#22C55E" /> <!-- emerald-500 -->
+      <stop offset="50%" stop-color="#0EA5E9" /> <!-- sky-500 -->
+      <stop offset="100%" stop-color="#4F46E5" /> <!-- indigo-600 -->
+    </linearGradient>
+
+    <!-- Drop Shadow for Wing -->
+    <filter id="shadow" x="60" y="25" width="100" height="100" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.4" />
+    </filter>
   </defs>
+
+  <!-- Rounded Outer Border & Background -->
+  <rect width="180" height="180" rx="40" fill="url(#bgGrad)" />
+  
+  <!-- Subtle Grid Pattern in background (sleek design) -->
+  <g opacity="0.08">
+    <line x1="30" y1="0" x2="30" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="60" y1="0" x2="60" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="90" y1="0" x2="90" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="120" y1="0" x2="120" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="150" y1="0" x2="150" y2="180" stroke="#FFFFFF" stroke-width="1"/>
+    
+    <line x1="0" y1="30" x2="180" y2="30" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="0" y1="60" x2="180" y2="60" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="0" y1="90" x2="180" y2="90" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="0" y1="120" x2="180" y2="120" stroke="#FFFFFF" stroke-width="1"/>
+    <line x1="0" y1="150" x2="180" y2="150" stroke="#FFFFFF" stroke-width="1"/>
+  </g>
+
+  <!-- Stock/Inventory Bars (Bar Chart acting as jet stream trails) -->
+  <!-- Bar 1 (Shortest, Left) -->
+  <rect x="45" y="105" width="14" height="35" rx="4" fill="url(#barGrad)" opacity="0.75" />
+  
+  <!-- Bar 2 (Medium, Middle) -->
+  <rect x="68" y="85" width="14" height="55" rx="4" fill="url(#barGrad)" opacity="0.9" />
+  
+  <!-- Bar 3 (Tallest, Right) -->
+  <rect x="91" y="60" width="14" height="80" rx="4" fill="url(#barGrad)" />
+
+  <!-- Paper Airplane / Pilot Wing (representing Pilot & Growth) -->
+  <!-- Shaded back wing / depth -->
+  <path d="M145 35 L85 75 L112 87 Z" fill="#4338CA" opacity="0.8" />
+  <!-- Main upper wing -->
+  <path d="M145 35 L112 87 L125 110 Z" fill="url(#wingGrad)" filter="url(#shadow)" />
+  <!-- Fold line / Accent -->
+  <path d="M145 35 L112 87" stroke="#FFFFFF" stroke-width="1" opacity="0.5" stroke-linecap="round" />
+
+  <!-- A small dynamic steering cursor or pilot target crosshair (very subtle, high-end) -->
+  <circle cx="145" cy="35" r="5" fill="#38BDF8" />
+  <circle cx="145" cy="35" r="9" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="2 2" />
 </svg>
