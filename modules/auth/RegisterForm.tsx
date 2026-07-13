@@ -24,10 +24,13 @@ export default function RegisterForm() {
   const { register: signup } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
@@ -39,17 +42,34 @@ export default function RegisterForm() {
     },
   });
 
+  const handleFillDummyData = () => {
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    const email = `recruiter.${randomSuffix}@stockpilot.com`;
+
+    setValue('businessName', `Recruiter Corp ${randomSuffix}`);
+    setValue('name', `Recruiter Candidate ${randomSuffix}`);
+    setValue('email', email);
+    setValue('password', 'password123');
+    setError(null);
+    showToast.success('Dynamic dummy data filled!');
+  };
+
   const onSubmit = async (data: RegisterFormValues) => {
     setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
     try {
-      const success = await signup(data);
-      if (success) {
+      const successResult = await signup(data);
+      if (successResult) {
+        setSuccess('Registration successful! Redirecting to login...');
         showToast.success('Business and Admin account registered successfully! Please log in.');
-        router.push('/login');
+        router.push('/login?registered=true');
       } else {
+        setError('Registration failed. The email might be in use or details are invalid.');
         showToast.error('Registration failed. The email might be in use.');
       }
     } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
       showToast.error('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -62,6 +82,20 @@ export default function RegisterForm() {
         <h1 className="text-3xl font-extrabold tracking-tight text-primary mb-2">Register</h1>
         <p className="text-sm text-muted-foreground">Set up your business and admin user</p>
       </div>
+
+      {error && (
+        <div className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
+          <span className="shrink-0 mt-0.5">⚠️</span>
+          <span className="leading-relaxed">{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
+          <span className="shrink-0 mt-0.5">✅</span>
+          <span className="leading-relaxed">{success}</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
@@ -108,9 +142,20 @@ export default function RegisterForm() {
           {errors.password && <p className="text-xs text-destructive mt-1.5">{errors.password.message}</p>}
         </div>
 
-        <Button type="submit" className="w-full py-2.5 h-11 text-sm font-semibold mt-4 transition-all" disabled={isSubmitting}>
-          {isSubmitting ? 'Registering...' : 'Register'}
-        </Button>
+        <div className="pt-2 space-y-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleFillDummyData}
+            className="w-full py-2.5 h-11 text-sm font-semibold transition-all border-dashed border-primary/30 text-primary hover:bg-primary/5 hover:border-primary cursor-pointer"
+          >
+            ✨ Fill Dummy Data
+          </Button>
+
+          <Button type="submit" className="w-full py-2.5 h-11 text-sm font-semibold transition-all" disabled={isSubmitting}>
+            {isSubmitting ? 'Registering...' : 'Register'}
+          </Button>
+        </div>
       </form>
 
       <div className="mt-8 text-center text-xs text-muted-foreground">

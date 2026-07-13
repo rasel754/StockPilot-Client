@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -22,10 +22,22 @@ export default function LoginForm() {
   const { login } = useAuth();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('registered') === 'true') {
+        setSuccess('Business and Admin account registered successfully! Please sign in.');
+      }
+    }
+  }, []);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -35,17 +47,29 @@ export default function LoginForm() {
     },
   });
 
+  const handleFillDummyData = () => {
+    setValue('email', 'recruiter@stockpilot.com');
+    setValue('password', 'password123');
+    setError(null);
+    showToast.success('Dummy credentials filled!');
+  };
+
   const onSubmit = async (data: LoginFormValues) => {
     setIsSubmitting(true);
+    setError(null);
+    setSuccess(null);
     try {
-      const success = await login(data.email, data.password);
-      if (success) {
+      const successResult = await login(data.email, data.password);
+      if (successResult) {
+        setSuccess('Signed in successfully! Redirecting...');
         showToast.success('Signed in successfully!');
         router.push('/dashboard');
       } else {
+        setError('Invalid email or password. Please verify your credentials and try again.');
         showToast.error('Invalid email or password');
       }
     } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
       showToast.error('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -58,6 +82,20 @@ export default function LoginForm() {
         <h1 className="text-3xl font-extrabold tracking-tight text-primary mb-2">StockPilot</h1>
         <p className="text-sm text-muted-foreground">Smart Inventory & Expiry Tracker</p>
       </div>
+
+      {error && (
+        <div className="mb-5 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-xs font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
+          <span className="shrink-0 mt-0.5">⚠️</span>
+          <span className="leading-relaxed">{error}</span>
+        </div>
+      )}
+
+      {success && (
+        <div className="mb-5 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium flex items-start gap-2.5 animate-in fade-in duration-200">
+          <span className="shrink-0 mt-0.5">✅</span>
+          <span className="leading-relaxed">{success}</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div>
@@ -84,9 +122,20 @@ export default function LoginForm() {
           {errors.password && <p className="text-xs text-destructive mt-1.5">{errors.password.message}</p>}
         </div>
 
-        <Button type="submit" className="w-full py-2.5 h-11 text-sm font-semibold mt-4 transition-all" disabled={isSubmitting}>
-          {isSubmitting ? 'Signing In...' : 'Sign In'}
-        </Button>
+        <div className="pt-2 space-y-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleFillDummyData}
+            className="w-full py-2.5 h-11 text-sm font-semibold transition-all border-dashed border-primary/30 text-primary hover:bg-primary/5 hover:border-primary cursor-pointer"
+          >
+            ✨ Fill Dummy Data
+          </Button>
+
+          <Button type="submit" className="w-full py-2.5 h-11 text-sm font-semibold transition-all" disabled={isSubmitting}>
+            {isSubmitting ? 'Signing In...' : 'Sign In'}
+          </Button>
+        </div>
       </form>
 
       <div className="mt-8 text-center text-xs text-muted-foreground">
