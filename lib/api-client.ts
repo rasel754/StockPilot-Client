@@ -54,6 +54,18 @@ const transformIds = (obj: any): any => {
     transformed.id = obj._id;
   }
 
+  // Handle populated references ending with Id
+  for (const key of Object.keys(transformed)) {
+    if (key.endsWith('Id') && transformed[key] && typeof transformed[key] === 'object' && !Array.isArray(transformed[key])) {
+      const baseKey = key.slice(0, -2); // e.g. productId -> product
+      if (!transformed[baseKey]) {
+        transformed[baseKey] = transformed[key];
+      }
+      // Revert the ID field back to the ID string representation
+      transformed[key] = transformed[key].id || transformed[key]._id || '';
+    }
+  }
+
   return transformed;
 };
 
