@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAccessToken, setAccessToken, getRefreshToken, clearTokens } from './auth-token';
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://stock-pilot-server.vercel.app',
   headers: {
     'Content-Type': 'application/json',
   },
